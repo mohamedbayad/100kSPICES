@@ -1,0 +1,7 @@
+input:invalid {
+    --tw-ring-color: #FF204E;
+}
+
+input:valid {
+    --tw-ring-color: #789461;
+}

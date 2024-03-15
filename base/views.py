@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, logout as logout_view , login as login_view
 from django.contrib.auth.models import User
 
@@ -27,17 +27,20 @@ def register(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         password_confirmation = request.POST.get('password_confirmation')
-        user_check = User.objects.filter(username=username).exists()
-        if user_check:
-            return HttpResponse('the user is already registered')
-        else:
-            user = User.objects.create_user(username, email, password_confirmation)
-            user.save()
-            if user is not None:
-                return HttpResponse('register successful')
+        
+        if password != password_confirmation:
+            return JsonResponse({"message": "passwords do not match", "status": False})
+        
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"message": "the user is already registered", "status": False})
+        
+        user = User.objects.create_user(username, email, password)
+        user.save()
+
         
     return render(request, f'{template_path}register.html')
 
 def logout(request):
     logout_view(request)
+    
     return HttpResponse('logout successful')
