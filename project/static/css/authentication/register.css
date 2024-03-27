@@ -5,3 +5,7 @@ input:invalid {
 input:valid {
     --tw-ring-color: #789461;
 }
+
+input:focus {
+    --tw-ring-color: rgb(79 70 229);
+}

@@ -6,10 +6,7 @@
 {% endblock title %}
 
 {% block content %}
-<div class="message-alert absolute top-2 right-2" id="message-alert">
-
-</div>
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8" id="container-register">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
         <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
             alt="Your Company">
@@ -23,7 +20,7 @@
             <div>
                 <label for="username" class="block text-sm font-medium leading-6 text-gray-900">Username</label>
                 <div class="mt-2">
-                    <input id="username" name="username" type="text" autocomplete="username" required
+                    <input id="username" name="username" type="text" autocomplete="username" value="" required
                         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                 </div>
             </div>
@@ -67,38 +64,48 @@
 </div>
 
 <script type="text/javascript">
-
-    let password = document.getElementById("password")
-    let password_confirmation = document.getElementById("password_confirmation")
-    password_confirmation.addEventListener('input', () => {
-        if (password.value == password_confirmation.value) {
-            password_confirmation.style.cssText = "--tw-ring-color: green"
-        } else {
-            password_confirmation.style.cssText = "--tw-ring-color: red"
-        }
-    })
-
-
-    $(document).ready(() => {
-        $("form").submit((e) => {
-            e.preventDefault();
-            let values = $(this).serialize();
+    $(document).ready(function() {
+        $(":input").on("input", (i) => {
             $.ajax({
                 headers: {
                     "X-CSRFToken": $("input[name='csrfmiddlewaretoken']").val(),
                 },
-                url: '{% url "register" %}',
-                type: "post",
-                data: values,
-                success: function (data) {
-                    console.log(data)
+                type: "POST",
+                data: $('#form-register').serialize(),
+                url: "{% url 'validate_registration' %}",
+                success: function(response) {
+                    if (response.from == "username") {
+                        $("#username").addClass("focus:ring-red-600 ring-red-600");
+                    } else {
+                        $("#username").removeClass("focus:ring-red-600 ring-red-600");
+                    }
+                    if (response.from == "password_confirmation") {
+                        $("#password_confirmation").addClass("focus:ring-red-600 ring-red-600");
+                    } else {
+                        $("#password_confirmation").removeClass("focus:ring-red-600 ring-red-600");
+                    }
                 },
-
-                error: (err) => {
-                    console.log(err)
-                }
             })
         })
-    })
+
+        $("#form-register").submit(function(e) {
+            e.preventDefault();
+            let username = $("#username").val();
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": $("input[name='csrfmiddlewaretoken']").val(),
+                },
+                type: "POST",
+                url: "{% url 'register' %}",
+                data: $('#form-register').serialize(),
+
+                success: function(response) {
+                    console.log('Register Success');
+                    console.log(response.data);
+                    $('#form-register')[0].reset();
+                },
+            })
+        })
+    });
 </script>
 {% endblock content %}
