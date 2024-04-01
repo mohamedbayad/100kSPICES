@@ -6,6 +6,6 @@ input:valid {
     --tw-ring-color: #789461;
 }
 
-input[value=" "]:focus {
+input:focus {
     --tw-ring-color: rgb(79 70 229);
 }
