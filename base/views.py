@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, logout as logout_view , login as login_view
 from django.contrib.auth.models import User
@@ -6,6 +6,15 @@ from django.contrib.auth.models import User
 # Create your views here.
 
 template_path = "authentication/"
+dashboard_path = "dashboard/"
+
+def check_user(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        checkUser = User.objects.filter(username=username).exists()
+        if checkUser:
+            return JsonResponse({"exists": True, "message": "User already exists"})
+    return JsonResponse({"exists": False})
 
 def login(request):
     if request.method == 'POST':
@@ -16,16 +25,11 @@ def login(request):
             login_view(request, user)
             return JsonResponse({"status": True, "message": "Login successful"})
         else:
-            return JsonResponse({"status": False, "message": "login failed"})
+            checkUser = User.objects.filter(username=username).exists()
+            if checkUser:
+                return JsonResponse({"status": False, "message": "Your password is incorrect"})
+            return JsonResponse({"status": False, "message": f"The username \"{username}\" is incorrect"})
     return render(request, f"{template_path}login.html", {'title' : "login"})
-
-def check_user(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        checkUser = User.objects.filter(username=username).exists()
-        if checkUser:
-            return JsonResponse({"exists": True, "message": "User already exists"})
-    return JsonResponse({"exists": False})
 
 def register(request):
     if request.method == 'POST':
@@ -33,7 +37,6 @@ def register(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         password_confirmation = request.POST.get('password_confirmation')
-        
         if password_confirmation == password:
             user = User.objects.create_user(username, email, password)
             user.save()
@@ -42,9 +45,9 @@ def register(request):
 
 def logout(request):
     logout_view(request)
-    return HttpResponse('logout successful')
+    return redirect("login")
 
 
-def dashboard(request):
+def resetPassword(request):
     
-    return HttpResponse('dashboard successful')
+    return render(request, f'{template_path}resetPassword.html')

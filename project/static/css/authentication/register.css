@@ -1,11 +1,18 @@
-input:invalid {
-    --tw-ring-color: #FF204E;
+.message-block {
+    transition: all .5s ease-in-out;
+    transform: translateY(-25px);
+    position: relative;
+    z-index: 1;
+    display: block;
+    visibility: hidden;
+    height: 0;
 }
 
-input:valid {
-    --tw-ring-color: #789461;
+input {
+    position: relative;
+    z-index: 2;
 }
 
-input:focus {
-    --tw-ring-color: rgb(79 70 229);
+.eye {
+    z-index: 2;
 }
