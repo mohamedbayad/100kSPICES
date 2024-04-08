@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 # Create your views here.
 
 template_path = "authentication/"
-dashboard_path = "dashboard/"
 
 def check_user(request):
     if request.method == 'POST':
@@ -49,5 +48,5 @@ def logout(request):
 
 
 def resetPassword(request):
-    
+
     return render(request, f'{template_path}resetPassword.html')
